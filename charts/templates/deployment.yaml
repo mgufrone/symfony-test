@@ -5,6 +5,11 @@ metadata:
   labels:
     {{- include "charts.labels" . | nindent 4 }}
 spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 5
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
