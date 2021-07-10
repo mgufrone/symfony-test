@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "charts.fullname" . }}-cm
+data:
+  SCRIPT_FILENAME: "/var/www/html/public$fastcgi_script_name"
+  DOCUMENT_ROOT: "/var/www/html/public"
