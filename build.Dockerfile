@@ -8,6 +8,7 @@ RUN apk add --no-cache fcgi
 ADD . .
 COPY www.conf /usr/local/etc/php-fpm.d/www.conf
 RUN composer.phar install --prefer-dist --no-dev
+ENV FCGI_STATUS_PATH "/health"
 RUN wget -O /usr/local/bin/php-fpm-healthcheck \
     https://raw.githubusercontent.com/renatomefi/php-fpm-healthcheck/master/php-fpm-healthcheck \
     && chmod +x /usr/local/bin/php-fpm-healthcheck
