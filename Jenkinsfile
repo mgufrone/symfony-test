@@ -29,7 +29,7 @@ pipeline {
         stage('Build') {
             steps {
                 container('composer') {
-                    sh "/app/.env .env"
+                    sh "cp /app/.env .env"
                     sh "composer install"
                 }
                 container('kaniko') {
