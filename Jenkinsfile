@@ -21,11 +21,6 @@ pipeline {
         string(name: "BRANCH", defaultValue: "main", description: "Branch to Build")
     }
     stages {
-        stage('Setup') {
-            steps {
-                git credentialsId: "github", url: "https://github.com/mgufrone/symfony-test", branch: params.BRANCH
-            }
-        }
         stage('Build') {
             steps {
                 container('composer') {
