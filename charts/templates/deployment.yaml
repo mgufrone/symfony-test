@@ -37,6 +37,14 @@ spec:
           configMap:
             name: symfony-env-file
       containers:
+        - name: {{.Chart.Name}}-prometheus
+          image: hipages/php-fpm_exporter
+          env:
+            - name: "PHP_FPM_SCRAPE_URI"
+              value: "${{.Chart.Name}}:9000/status"
+          ports:
+            - containerPort: 9253
+              name: fpm-prometheus
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
