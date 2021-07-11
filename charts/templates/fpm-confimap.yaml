@@ -3,5 +3,6 @@ kind: ConfigMap
 metadata:
   name: {{ include "charts.fullname" . }}-cm
 data:
-  SCRIPT_FILENAME: "/var/www/html/public$fastcgi_script_name"
+  SCRIPT_FILENAME: "/var/www/html/public/index.php"
   DOCUMENT_ROOT: "/var/www/html/public"
+

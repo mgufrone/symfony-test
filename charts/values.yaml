@@ -39,6 +39,9 @@ securityContext: {}
 service:
   type: NodePort
   port: 9000
+env:
+  - ref: configMap
+    value: symfony-env
 
 ingress:
   enabled: true
