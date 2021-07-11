@@ -17,9 +17,6 @@ pipeline {
 '''
         }
     }
-    parameters {
-        string(name: "BRANCH", defaultValue: "main", description: "Branch to Build")
-    }
     stages {
         stage('Build') {
             steps {
@@ -33,7 +30,7 @@ pipeline {
                             def data = ["auths": ["ghcr.io": ["username": username, "password": password]]]
                             writeJSON file: "docker-config.json", json: data
                             sh "cp docker-config.json /kaniko/.docker/config.json"
-                            sh "/kaniko/executor --context . --dockerfile ./build.Dockerfile --destination ghcr.io/mgufrone/symfony-test:${params.BRANCH}"
+                            sh "/kaniko/executor --context . --dockerfile ./build.Dockerfile --destination ghcr.io/mgufrone/symfony-test:${GIT_BRANCH} --destination ghcr.io/mgufrone/symfony-test:${GIT_COMMIT}"
                         }
                     }
                 }
@@ -42,7 +39,7 @@ pipeline {
         stage('Deployment') {
             steps {
                 container('helm') {
-                    sh "helm upgrade --install symfony ./charts"
+                    sh "helm upgrade --install symfony ./charts --set image.tag=${GIT_COMMIT}"
                 }
             }
         }
