@@ -36,9 +36,6 @@ spec:
         - name: env-file
           configMap:
             name: symfony-env-file
-            items:
-              - key: .env
-                path: .env
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
