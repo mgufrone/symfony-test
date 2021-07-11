@@ -32,6 +32,13 @@ spec:
       serviceAccountName: {{ include "charts.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+        - name: env-file
+          configMap:
+            name: symfony-env-file
+            items:
+              - key: .env
+                path: .env
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -39,6 +46,10 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- range .Values.env }}
+          volumeMounts:
+            - mountPath: /var/www/html/.env
+              subPath: .env
+              name: env-file
           envFrom:
             {{- if eq .ref "configMap" }}
             - configMapRef:
@@ -49,21 +60,6 @@ spec:
             - name: fastcgi
               containerPort: 9000
               protocol: TCP
-{{/*          livenessProbe:*/}}
-{{/*            exec:*/}}
-{{/*              command:*/}}
-{{/*                - php-fpm-healthcheck*/}}
-{{/*                - --accepted-conn=5000 # fails after fpm has served more than 5k requests, this will force the pod to reset, use with caution*/}}
-{{/*            initialDelaySeconds: 10*/}}
-{{/*            failureThreshold: 10*/}}
-{{/*            periodSeconds: 5*/}}
-{{/*          readinessProbe:*/}}
-{{/*            exec:*/}}
-{{/*              command:*/}}
-{{/*                - php-fpm-healthcheck*/}}
-{{/*            initialDelaySeconds: 10*/}}
-{{/*            failureThreshold: 10*/}}
-{{/*            periodSeconds: 5*/}}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

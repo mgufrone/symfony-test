@@ -2,6 +2,19 @@ pipeline {
     agent {
         kubernetes {
             inheritFrom "composer deployment"
+            yaml '''
+            spec:
+              volumes:
+                - name: env-file
+                  configMap:
+                    name: symfony-env-file
+              containers: 
+              - name: composer
+                volumeMounts:
+                  - mountPath: /app/.env
+                    subPath: .env
+                    name: env-file
+'''
         }
     }
     parameters {
