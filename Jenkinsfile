@@ -22,9 +22,9 @@ pipeline {
                     script {
                         withCredentials([usernamePassword(credentialsId: "github", usernameVariable: 'username', passwordVariable: 'password')]) {
                             def data = ["auths": ["ghcr.io": ["username": username, "password": password]]]
-                            sh "printenv"
-                            writeJSON file: "$HOME/.docker/config.json", json: data
-                            sh "/kaniko/executor --context . --dockerfile ./build.Dockerfile ghcr.io/mgufrone/symfony-test:${params.BRANCH}"
+                            writeJSON file: "docker-config.json", json: data
+                            sh "cp docker-config.json /kaniko/.docker/config.json"
+                            sh "/kaniko/executor --context . --dockerfile ./build.Dockerfile --destination ghcr.io/mgufrone/symfony-test:${params.BRANCH}"
                         }
                     }
                 }
