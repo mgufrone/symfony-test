@@ -14,7 +14,7 @@ class HealthcheckController extends AbstractController
     public function health(): Response
     {
         $response = new Response();
-        $response->setContent(json_encode(['status'=>'ok', 'date'=>date(DATE_W3C)]));
+        $response->setContent(json_encode(['status'=>'ok', 'date'=>date(DATE_W3C), 'host' => $_ENV['HOSTNAME']]));
         return $response;
     }
     /**
