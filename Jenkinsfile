@@ -35,7 +35,7 @@ pipeline {
             post {
                 always {
                     container('sonar') {
-                        sh "SONAR_HOST_URL=$sonarUrl SONAR_LOGIN=$sonarToken sonar-scanner"
+                        sh "sonar-scanner"
                     }
                 }
             }
