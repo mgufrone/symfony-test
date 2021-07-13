@@ -30,7 +30,9 @@ pipeline {
                 always {
                     container('sonar') {
                         sh "printenv"
-                        echo env
+                        script {
+                            println new JsonBuilder(env).toPrettyString()
+                        }
                         sh "echo \"SONAR_HOST_URL=$SONAR_HOST_URL BRANCH_NAME=$BRANCH_NAME SONAR_LOGIN=$SONAR_LOGIN\""
                         sh "sonar-scanner"
                     }
