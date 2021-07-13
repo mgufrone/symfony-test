@@ -1,7 +1,7 @@
 pipeline {
     agent {
         kubernetes {
-            inheritFrom "composer deployment"
+            inheritFrom "composer deployment sonar"
             yaml '''
             spec:
               volumes:
@@ -23,7 +23,19 @@ pipeline {
                 container('composer') {
                     sh "cp /app/.env .env"
                     sh "composer install"
+                    sh "./vendor/bin/phpunit"
                 }
+            }
+            post {
+                always {
+                    container('sonar') {
+                        sh "sonar-scanner"
+                    }
+                }
+            }
+        }
+        stage('Build Image') {
+            steps {
                 container('kaniko') {
                     script {
                         withCredentials([usernamePassword(credentialsId: "github", usernameVariable: 'username', passwordVariable: 'password')]) {
@@ -38,6 +50,7 @@ pipeline {
         }
         stage('Deployment') {
             steps {
+                input message: 'Proceed to Deploy?', ok: 'Deploy', submitter: 'gufy,admin'
                 container('helm') {
                     sh "helm upgrade --install symfony ./charts --set image.tag=${GIT_COMMIT}"
                 }
