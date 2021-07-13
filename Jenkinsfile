@@ -43,8 +43,9 @@ pipeline {
         }
         stage('Deployment') {
             when {
-                expression {
-                    env.BRANCH_NAME = 'main'
+                anyOf {
+                    branch "main"
+                    buildingTag()
                 }
             }
             steps {
