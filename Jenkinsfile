@@ -35,7 +35,7 @@ pipeline {
             post {
                 always {
                     container('sonar') {
-                        sh "sonar-scanner"
+                        sh "sonar-scanner -X"
                     }
                 }
             }
