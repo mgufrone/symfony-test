@@ -30,7 +30,7 @@ pipeline {
                 always {
                     container('sonar') {
                         sh "printenv"
-                        sh "sonar-scanner"
+                        sh "SONAR_HOST_URL=$SONAR_HOST_URL SONAR_LOGIN=$SONAR_LOGIN sonar-scanner"
                     }
                 }
             }
