@@ -52,6 +52,7 @@ ingress:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/backend-protocol: "FCGI"
     nginx.ingress.kubernetes.io/fastcgi-index: "index.php"
+    cert-manager.io/cluster-issuer: example-issuer
     #    nginx.ingress.kubernetes.io/fastcgi-params-configmap: "example-cm"
     #     kubernetes.io/tls-acme: "true"
   hosts:
@@ -61,15 +62,15 @@ ingress:
         backend:
           serviceName: chart-example.local
           servicePort: 9000
-  tls: []
+  tls: true
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
 
 resources:
   limits:
-   cpu: 200m
-   memory: 256Mi
+   cpu: 100m
+   memory: 128Mi
   requests:
    cpu: 100m
    memory: 128Mi
