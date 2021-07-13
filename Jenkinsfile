@@ -50,7 +50,6 @@ pipeline {
             steps {
                 script {
                     def blocks = [
-                            "blocks": [
                                     [
                                             "type": "section",
                                             "text": [
@@ -83,7 +82,6 @@ pipeline {
                                                     ]
                                             ]
                                     ]
-                            ]
                     ]
                     slackSend(channel: "#general", blocks: blocks)
                 }
