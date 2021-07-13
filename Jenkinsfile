@@ -85,7 +85,7 @@ pipeline {
                                             ]
                                     ]
                     ]
-                    slackSend(channel: "#general", blocks: blocks)
+                    slackSend(channel: "#general", blocks: blocks, failOnError: true)
                 }
                 input message: 'Proceed to Deploy?', ok: 'Deploy'
                 container('kaniko') {
