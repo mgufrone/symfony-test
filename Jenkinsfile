@@ -48,43 +48,45 @@ pipeline {
                 }
             }
             steps {
-                def blocks = [
-                    "blocks": [
-                            [
-                                "type": "section",
-                                "text": [
-                                "type": "mrkdwn",
-                                "text": "Approval required for:\n*<fakeLink.toEmployeeProfile.com|Fred Enriquez - New device request>*"
-                            ]
-                            ],
-                            [
-                                "type": "actions",
-                                "elements": [
+                script {
+                    def blocks = [
+                            "blocks": [
                                     [
-                                        "type": "button",
-                                        "text": [
-                                        "type": "plain_text",
-                                        "emoji": true,
-                                        "text": "Approve"
-                                    ],
-                                        "style": "primary",
-                                        "value": "approve"
+                                            "type": "section",
+                                            "text": [
+                                                    "type": "mrkdwn",
+                                                    "text": "Approval required for:\n*<fakeLink.toEmployeeProfile.com|Fred Enriquez - New device request>*"
+                                            ]
                                     ],
                                     [
-                                        "type": "button",
-                                        "text": [
-                                        "type": "plain_text",
-                                        "emoji": true,
-                                        "text": "Abort"
-                                    ],
-                                        "style": "danger",
-                                        "value": "deny"
+                                            "type"    : "actions",
+                                            "elements": [
+                                                    [
+                                                            "type" : "button",
+                                                            "text" : [
+                                                                    "type" : "plain_text",
+                                                                    "emoji": true,
+                                                                    "text" : "Approve"
+                                                            ],
+                                                            "style": "primary",
+                                                            "value": "approve"
+                                                    ],
+                                                    [
+                                                            "type" : "button",
+                                                            "text" : [
+                                                                    "type" : "plain_text",
+                                                                    "emoji": true,
+                                                                    "text" : "Abort"
+                                                            ],
+                                                            "style": "danger",
+                                                            "value": "deny"
+                                                    ]
+                                            ]
                                     ]
                             ]
-                            ]
                     ]
-                ]
-                slackSend(channel: "#general", blocks: blocks)
+                    slackSend(channel: "#general", blocks: blocks)
+                }
                 input message: 'Proceed to Deploy?', ok: 'Deploy'
                 container('kaniko') {
                     script {
