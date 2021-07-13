@@ -29,6 +29,7 @@ pipeline {
             post {
                 always {
                     container('sonar') {
+                        sh "printenv"
                         sh "sonar-scanner"
                     }
                 }
