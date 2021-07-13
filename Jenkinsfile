@@ -35,7 +35,7 @@ pipeline {
             post {
                 always {
                     container('sonar') {
-                        sh "SONAR_LOGIN=$SONAR_LOGIN sonar-scanner -X"
+                        sh "sonar-scanner -Dsonar.login=$SONAR_LOGIN -X"
                     }
                 }
             }
