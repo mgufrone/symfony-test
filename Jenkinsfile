@@ -19,6 +19,10 @@ pipeline {
 '''
         }
     }
+    environment {
+        SONAR_HOST_URL = credentials('sonar-url')
+        SONAR_LOGIN = credentials('sonar-token')
+    }
     stages {
         stage('Build') {
             steps {
@@ -31,12 +35,7 @@ pipeline {
             post {
                 always {
                     container('sonar') {
-                        withCredentials([
-                            string(credentialsId: "sonar-url", variable: 'sonarUrl'),
-                            string(credentialsId: "sonar-token", variable: 'sonarToken')
-                        ]) {
-                            sh "SONAR_HOST_URL=$sonarUrl SONAR_LOGIN=$sonarToken sonar-scanner"
-                        }
+                        sh "SONAR_HOST_URL=$sonarUrl SONAR_LOGIN=$sonarToken sonar-scanner"
                     }
                 }
             }
