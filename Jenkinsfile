@@ -20,8 +20,8 @@ pipeline {
         }
     }
     environment {
-        SONAR_HOST_URL = credentials('sonar-url')
-        SONAR_LOGIN = credentials('sonar-token')
+        SONAR_HOST_URL = "http://sonarqube-sonarqube.sonarqube:9000/"
+        SONAR_LOGIN = "d1c6a9cdbe3511c2cf865081b1e0d653f5998ce5"
     }
     stages {
         stage('Build') {
