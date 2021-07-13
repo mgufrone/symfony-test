@@ -20,8 +20,9 @@ pipeline {
         }
     }
     environment {
-        SONAR_HOST_URL = "http://sonarqube-sonarqube.sonarqube:9000/"
-        SONAR_LOGIN = "d1c6a9cdbe3511c2cf865081b1e0d653f5998ce5"
+        SONAR_HOST_URL = credentials('sonar-url')
+        SONAR_LOGIN = credentials('sonar-token')
+        GITHUB = credentials('github')
     }
     stages {
         stage('Build') {
@@ -40,23 +41,22 @@ pipeline {
                 }
             }
         }
-        stage('Build Image') {
-            steps {
-                container('kaniko') {
-                    script {
-                        withCredentials([usernamePassword(credentialsId: "github", usernameVariable: 'username', passwordVariable: 'password')]) {
-                            def data = ["auths": ["ghcr.io": ["username": username, "password": password]]]
-                            writeJSON file: "docker-config.json", json: data
-                            sh "cp docker-config.json /kaniko/.docker/config.json"
-                            sh "/kaniko/executor --context . --dockerfile ./build.Dockerfile --destination ghcr.io/mgufrone/symfony-test:${GIT_BRANCH} --destination ghcr.io/mgufrone/symfony-test:${GIT_COMMIT}"
-                        }
-                    }
+        stage('Deployment') {
+            when {
+                expression {
+                    env.BRANCH_NAME = 'main'
                 }
             }
-        }
-        stage('Deployment') {
             steps {
-                input message: 'Proceed to Deploy?', ok: 'Deploy', submitter: 'gufy,admin'
+                input message: 'Proceed to Deploy?', ok: 'Deploy'
+                container('kaniko') {
+                    script {
+                        def data = ["auths": ["ghcr.io": ["username": ${env.GITHUB_USR}, "password": ${env.GITHUB_PWD}]]]
+                        writeJSON file: "docker-config.json", json: data
+                        sh "cp docker-config.json /kaniko/.docker/config.json"
+                        sh "/kaniko/executor --context . --dockerfile ./build.Dockerfile --destination ghcr.io/mgufrone/symfony-test:${GIT_BRANCH} --destination ghcr.io/mgufrone/symfony-test:${GIT_COMMIT}"
+                    }
+                }
                 container('helm') {
                     sh "helm upgrade --install symfony ./charts --set image.tag=${GIT_COMMIT}"
                 }
