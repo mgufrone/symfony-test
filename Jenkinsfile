@@ -68,7 +68,8 @@ pipeline {
                                                                     "text" : "Approve"
                                                             ],
                                                             "style": "primary",
-                                                            "value": "approve"
+                                                            "action_id": sprintf("approve:%s", env.BUILD_URL),
+                                                            "value": sprintf("approve:%s", env.BUILD_URL),
                                                     ],
                                                     [
                                                             "type" : "button",
@@ -78,7 +79,8 @@ pipeline {
                                                                     "text" : "Abort"
                                                             ],
                                                             "style": "danger",
-                                                            "value": "deny"
+                                                            "action_id": sprintf("reject:%s", env.BUILD_URL),
+                                                            "value": sprintf("reject:%s", env.BUILD_URL),
                                                     ]
                                             ]
                                     ]
