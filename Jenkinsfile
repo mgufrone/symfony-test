@@ -54,7 +54,7 @@ pipeline {
                                             "type": "section",
                                             "text": [
                                                     "type": "mrkdwn",
-                                                    "text": "Approval required for:\n*<fakeLink.toEmployeeProfile.com|Fred Enriquez - New device request>*"
+                                                    "text": "Approval required for: *<${env.BUILD_URL}|${env.BUILD_TAG}>*"
                                             ]
                                     ],
                                     [
@@ -68,8 +68,8 @@ pipeline {
                                                                     "text" : "Approve"
                                                             ],
                                                             "style": "primary",
-                                                            "action_id": sprintf("approve:%s", env.BUILD_URL),
-                                                            "value": sprintf("approve:%s", env.BUILD_URL),
+                                                            "action_id": "approve:${env.BUILD_URL}",
+                                                            "value": "approve:${env.BUILD_URL}",
                                                     ],
                                                     [
                                                             "type" : "button",
@@ -79,8 +79,8 @@ pipeline {
                                                                     "text" : "Abort"
                                                             ],
                                                             "style": "danger",
-                                                            "action_id": sprintf("reject:%s", env.BUILD_URL),
-                                                            "value": sprintf("reject:%s", env.BUILD_URL),
+                                                            "action_id": "reject:${env.BUILD_URL}",
+                                                            "value": "reject:${env.BUILD_URL}",
                                                     ]
                                             ]
                                     ]
