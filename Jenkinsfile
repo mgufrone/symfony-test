@@ -22,7 +22,6 @@ pipeline {
     environment {
         SONAR_HOST_URL = credentials('sonar-url')
         SONAR_LOGIN = credentials('sonar-token')
-        GITHUB = credentials('github')
     }
     stages {
         stage('Build') {
@@ -52,10 +51,12 @@ pipeline {
                 input message: 'Proceed to Deploy?', ok: 'Deploy'
                 container('kaniko') {
                     script {
-                        def data = ["auths": ["ghcr.io": ["username": $GITHUB_USR, "password": $GITHUB_PWD]]]
-                        writeJSON file: "docker-config.json", json: data
-                        sh "cp docker-config.json /kaniko/.docker/config.json"
-                        sh "/kaniko/executor --context . --dockerfile ./build.Dockerfile --destination ghcr.io/mgufrone/symfony-test:${GIT_BRANCH} --destination ghcr.io/mgufrone/symfony-test:${GIT_COMMIT}"
+                        withCredentials([usernamePassword(credentialsId: "github", usernameVariable: 'username', passwordVariable: 'password')]) {
+                            def data = ["auths": ["ghcr.io": ["username": $ { env.GITHUB_USR }, "password": password]]]
+                            writeJSON file: "docker-config.json", json: data
+                            sh "cp docker-config.json /kaniko/.docker/config.json"
+                            sh "/kaniko/executor --context . --dockerfile ./build.Dockerfile --destination ghcr.io/mgufrone/symfony-test:${GIT_BRANCH} --destination ghcr.io/mgufrone/symfony-test:${GIT_COMMIT}"
+                        }
                     }
                 }
                 container('helm') {
