@@ -1,3 +1,5 @@
+import groovy.json.JsonOutput
+
 pipeline {
     agent {
         kubernetes {
@@ -31,7 +33,10 @@ pipeline {
                     container('sonar') {
                         sh "printenv"
                         script {
-                            println new JsonBuilder(env).toPrettyString()
+                            def json = JsonOutput.toJson(env)
+                            //if you need pretty print (multiline) json
+                            json = JsonOutput.prettyPrint(json)
+                            println json
                         }
                         sh "echo \"SONAR_HOST_URL=$SONAR_HOST_URL BRANCH_NAME=$BRANCH_NAME SONAR_LOGIN=$SONAR_LOGIN\""
                         sh "sonar-scanner"
