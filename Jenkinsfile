@@ -52,7 +52,7 @@ pipeline {
                 container('kaniko') {
                     script {
                         withCredentials([usernamePassword(credentialsId: "github", usernameVariable: 'username', passwordVariable: 'password')]) {
-                            def data = ["auths": ["ghcr.io": ["username": $ { env.GITHUB_USR }, "password": password]]]
+                            def data = ["auths": ["ghcr.io": ["username": username, "password": password]]]
                             writeJSON file: "docker-config.json", json: data
                             sh "cp docker-config.json /kaniko/.docker/config.json"
                             sh "/kaniko/executor --context . --dockerfile ./build.Dockerfile --destination ghcr.io/mgufrone/symfony-test:${GIT_BRANCH} --destination ghcr.io/mgufrone/symfony-test:${GIT_COMMIT}"
