@@ -31,11 +31,12 @@ pipeline {
             post {
                 always {
                     container('sonar') {
-                        sh "printenv"
-                        writeJSON file: 'data.json', json: env
-                        sh "cat data.json"
-                        sh "echo \"SONAR_HOST_URL=$SONAR_HOST_URL BRANCH_NAME=$BRANCH_NAME SONAR_LOGIN=$SONAR_LOGIN\""
-                        sh "sonar-scanner"
+                        withCredentials([
+                            string(credentialsId: "sonar-url", variable: 'sonarUrl'),
+                            string(credentialsId: "sonar-token", variable: 'sonarToken')
+                        ]) {
+                            sh "SONAR_HOST_URL=$sonarUrl SONAR_LOGIN=$sonarToken sonar-scanner"
+                        }
                     }
                 }
             }
