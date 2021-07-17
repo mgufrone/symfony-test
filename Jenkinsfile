@@ -4,7 +4,8 @@ pipeline {
         SONAR_HOST_URL = credentials('sonar-url')
         SONAR_LOGIN = credentials('sonar-token')
     }
-    stages {
+  options { skipDefaultCheckout() }
+  stages {
             stage('Build') {
                 agent {
                     kubernetes {
@@ -25,6 +26,7 @@ spec:
                     }
                 }
                 steps {
+                  checkout scm
                   script {
                     env.COMPOSER = GIT_BRANCH=="main" ? "composer.production.json" : "composer.json"
                   }
