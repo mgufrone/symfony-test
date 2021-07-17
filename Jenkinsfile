@@ -28,7 +28,7 @@ spec:
                 steps {
                   checkout scm
                   script {
-                    env.COMPOSER = GIT_BRANCH=="main" ? "composer.production.json" : "composer.json"
+                    env.COMPOSER = env.GIT_BRANCH=="main" ? "composer.production.json" : "composer.json"
                   }
                     container('composer') {
                         sh "cp /app/.env .env"
