@@ -123,7 +123,7 @@ spec:
                         sh "helm upgrade --install symfony ./charts --set image.tag=${GIT_COMMIT}"
                     }
                     container('kubectl') {
-                        sh "kubectl wait --timeout=60s --for=condition=ready pod -l app=service"
+                        sh "kubectl wait --timeout=60s --for=condition=ready pod -l \"app.kubernetes.io/name=service\""
                     }
                 }
             }
