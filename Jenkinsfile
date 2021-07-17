@@ -3,11 +3,12 @@ pipeline {
         SONAR_HOST_URL = credentials('sonar-url')
         SONAR_LOGIN = credentials('sonar-token')
     }
-        stages {
-            agent {
-                kubernetes {
-                    inheritFrom "composer sonar"
-                    yaml '''
+    stages {
+            stage('Build') {
+                agent {
+                    kubernetes {
+                        inheritFrom "composer sonar"
+                        yaml '''
 spec:
     volumes:
     - name: env-file
@@ -20,9 +21,8 @@ spec:
         subPath: .env
         name: env-file 
 '''
+                    }
                 }
-            }
-            stage('Build') {
                 steps {
                     container('composer') {
                         sh "cp /app/.env .env"
@@ -41,20 +41,13 @@ spec:
                     }
                 }
             }
-        }
-    stages {
-      agent {
-          kubernetes {
-              inheritFrom "deployment"
-          }
-      }
-        when {
-            anyOf {
-                branch "main"
-                buildingTag()
-            }
-        }
         stage('Pre-Deployment') {
+            when {
+                anyOf {
+                    branch "main"
+                    buildingTag()
+                }
+            }
             steps {
                 script {
                     def blocks = [
@@ -100,13 +93,16 @@ spec:
                 }
             }
         }
-    }
-        stages {
             stage('Deployment') {
                 when {
                     anyOf {
                         branch "main"
                         buildingTag()
+                    }
+                }
+                agent {
+                    kubernetes {
+                        inheritFrom "deployment"
                     }
                 }
                 steps {
