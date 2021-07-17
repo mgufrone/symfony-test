@@ -118,6 +118,7 @@ spec:
                                 def data = ["auths": ["ghcr.io": ["username": username, "password": password]]]
                                 writeJSON file: "docker-config.json", json: data
                                 sh "cp docker-config.json /kaniko/.docker/config.json"
+                                sh "cp composer.production.json composer.json"
                                 sh "/kaniko/executor --context . --dockerfile ./build.Dockerfile --destination ghcr.io/mgufrone/symfony-test:${GIT_BRANCH} --destination ghcr.io/mgufrone/symfony-test:${GIT_COMMIT}"
                             }
                         }
