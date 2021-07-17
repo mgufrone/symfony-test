@@ -122,9 +122,6 @@ spec:
                     container('helm') {
                         sh "helm upgrade --install symfony ./charts --set image.tag=${GIT_COMMIT}"
                     }
-                    container('kubectl') {
-                        sh "kubectl get po"
-                    }
                 }
             }
         }
