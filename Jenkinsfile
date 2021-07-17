@@ -121,13 +121,13 @@ spec:
                                 writeJSON file: "docker-config.json", json: data
                                 sh "cp docker-config.json /kaniko/.docker/config.json"
                                 sh "cp composer.production.json composer.json"
-                              sh "cat composer.json"
-                              sh "/kaniko/executor --context . --dockerfile ./build.Dockerfile --destination ghcr.io/mgufrone/symfony-test:${GIT_BRANCH} --destination ghcr.io/mgufrone/symfony-test:${GIT_COMMIT}"
+                              sh "ls -la"
+                              sh "/kaniko/executor --context . --dockerfile ./build.Dockerfile --destination ghcr.io/mgufrone/symfony-test:${env.GIT_BRANCH} --destination ghcr.io/mgufrone/symfony-test:${env.GIT_COMMIT}"
                             }
                         }
                     }
                     container('helm') {
-                        sh "helm upgrade --install symfony ./charts --set image.tag=${GIT_COMMIT}"
+                        sh "helm upgrade --install symfony ./charts --set image.tag=${env.GIT_COMMIT}"
                     }
                 }
             }
