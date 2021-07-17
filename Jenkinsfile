@@ -121,7 +121,7 @@ spec:
                                 writeJSON file: "docker-config.json", json: data
                                 sh "cp docker-config.json /kaniko/.docker/config.json"
                                 sh "cp composer.production.json composer.json"
-                              sh "cp composer.production.lock composer.lock"
+                              sh "cat composer.json"
                               sh "/kaniko/executor --context . --dockerfile ./build.Dockerfile --destination ghcr.io/mgufrone/symfony-test:${GIT_BRANCH} --destination ghcr.io/mgufrone/symfony-test:${GIT_COMMIT}"
                             }
                         }
