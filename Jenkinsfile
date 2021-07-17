@@ -1,4 +1,5 @@
 pipeline {
+  agent none
     environment {
         SONAR_HOST_URL = credentials('sonar-url')
         SONAR_LOGIN = credentials('sonar-token')
