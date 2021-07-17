@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e70a476d242cbd0b97061c9f59d90fbc",
+    "content-hash": "d1e7cffaffc93e71e77a637b7555ea7d",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -157,6 +157,48 @@
                 }
             ],
             "time": "2020-05-25T17:44:05+00:00"
+        },
+        {
+            "name": "mgufrone/healthcheck-bundle",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mgufrone/health-test.git",
+                "reference": "0c6f6cf57b080ba0a650a52482965420cdd55074"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mgufrone/health-test/zipball/0c6f6cf57b080ba0a650a52482965420cdd55074",
+                "reference": "0c6f6cf57b080ba0a650a52482965420cdd55074",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": ">=7.2.5"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.5"
+            },
+            "default-branch": true,
+            "type": "project",
+            "autoload": {
+                "psr-4": {
+                    "Mgufrone\\HealthcheckBundle\\": ""
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Mgufrone\\HealthcheckBundle\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "support": {
+                "source": "https://github.com/mgufrone/health-test/tree/main",
+                "issues": "https://github.com/mgufrone/health-test/issues"
+            },
+            "time": "2021-07-17T14:13:57+00:00"
         },
         {
             "name": "psr/cache",
@@ -4550,7 +4592,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "mgufrone/healthcheck-bundle": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
@@ -4559,5 +4603,5 @@
         "ext-iconv": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.1.0"
 }
