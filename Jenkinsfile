@@ -1,8 +1,13 @@
 pipeline {
-    agent {
-        kubernetes {
-            inheritFrom "composer deployment sonar"
-            yaml '''
+    environment {
+        SONAR_HOST_URL = credentials('sonar-url')
+        SONAR_LOGIN = credentials('sonar-token')
+    }
+        stages {
+            agent {
+                kubernetes {
+                    inheritFrom "composer sonar"
+                    yaml '''
 spec:
     volumes:
     - name: env-file
@@ -15,14 +20,8 @@ spec:
         subPath: .env
         name: env-file 
 '''
-        }
-    }
-    environment {
-        SONAR_HOST_URL = credentials('sonar-url')
-        SONAR_LOGIN = credentials('sonar-token')
-    }
-    node(POD_LABEL) {
-        stages {
+                }
+            }
             stage('Build') {
                 steps {
                     container('composer') {
@@ -43,8 +42,12 @@ spec:
                 }
             }
         }
-    }
     stages {
+      agent {
+          kubernetes {
+              inheritFrom "deployment"
+          }
+      }
         when {
             anyOf {
                 branch "main"
@@ -92,14 +95,12 @@ spec:
                     ]
                     slackSend(channel: "#general", blocks: blocks, failOnError: true)
                 }
-                timeout(time: 5, unit: 'minutes') {
+                timeout(time: 5, unit: 'MINUTES') {
                     input message: 'Proceed to Deploy?', ok: 'Deploy'
                 }
             }
         }
     }
-
-    node(POD_LABEL) {
         stages {
             stage('Deployment') {
                 when {
@@ -129,5 +130,4 @@ spec:
                 }
             }
         }
-    }
 }
