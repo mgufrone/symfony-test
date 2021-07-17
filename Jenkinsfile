@@ -1,21 +1,19 @@
-import groovy.json.JsonOutput
-
 pipeline {
     agent {
         kubernetes {
             inheritFrom "composer deployment sonar"
             yaml '''
-            spec:
-              volumes:
-                - name: env-file
-                  configMap:
-                    name: symfony-env-file
-              containers: 
-              - name: composer
-                volumeMounts:
-                  - mountPath: /app/.env
-                    subPath: .env
-                    name: env-file
+spec:
+    volumes:
+    - name: env-file
+      configMap:
+        name: symfony-env-file
+    containers:
+    - name: composer
+      volumeMounts:
+      - mountPath: /app/.env
+        subPath: .env
+        name: env-file 
 '''
         }
     }
@@ -23,83 +21,111 @@ pipeline {
         SONAR_HOST_URL = credentials('sonar-url')
         SONAR_LOGIN = credentials('sonar-token')
     }
-    stages {
-        stage('Build') {
-            steps {
-                container('composer') {
-                    sh "cp /app/.env .env"
-                    sh "composer install"
-                    sh "./vendor/bin/phpunit"
+    node(POD_LABEL) {
+        stages {
+            stage('Build') {
+                steps {
+                    container('composer') {
+                        sh "cp /app/.env .env"
+                        sh "composer install"
+                        sh "./vendor/bin/phpunit"
+                    }
                 }
-            }
-            post {
-                always {
-                    container('sonar') {
-                        sh('sonar-scanner -Dsonar.login=$SONAR_LOGIN')
+                post {
+                    always {
+                        container('sonar') {
+                            sh('sonar-scanner -Dsonar.login=$SONAR_LOGIN')
+                        }
+                    }
+                    success {
+                        stash name: $BUILD_TAG, includes: "${workspace}/**"
                     }
                 }
             }
         }
-        stage('Deployment') {
-            when {
-                anyOf {
-                    branch "main"
-                    buildingTag()
-                }
+    }
+    stages {
+        when {
+            anyOf {
+                branch "main"
+                buildingTag()
             }
+        }
+        stage('Pre-Deployment') {
             steps {
                 script {
                     def blocks = [
-                                    [
-                                            "type": "section",
-                                            "text": [
-                                                    "type": "mrkdwn",
-                                                    "text": "Approval required for: *<${env.BUILD_URL}|${env.BUILD_TAG}>*"
-                                            ]
-                                    ],
-                                    [
-                                            "type"    : "actions",
-                                            "elements": [
-                                                    [
-                                                            "type" : "button",
-                                                            "text" : [
-                                                                    "type" : "plain_text",
-                                                                    "emoji": true,
-                                                                    "text" : "Approve"
-                                                            ],
-                                                            "style": "primary",
-                                                            "action_id": "approve:${env.BUILD_URL}",
-                                                            "value": "approve:${env.BUILD_URL}",
-                                                    ],
-                                                    [
-                                                            "type" : "button",
-                                                            "text" : [
-                                                                    "type" : "plain_text",
-                                                                    "emoji": true,
-                                                                    "text" : "Abort"
-                                                            ],
-                                                            "style": "danger",
-                                                            "action_id": "reject:${env.BUILD_URL}",
-                                                            "value": "reject:${env.BUILD_URL}",
-                                                    ]
-                                            ]
-                                    ]
+                      [
+                        "type": "section",
+                        "text": [
+                          "type": "mrkdwn",
+                          "text": "Approval required for: *<${env.BUILD_URL}|${env.BUILD_TAG}>*"
+                        ]
+                      ],
+                      [
+                        "type": "actions",
+                        "elements": [
+                          [
+                            "type": "button",
+                            "text": [
+                              "type": "plain_text",
+                              "emoji": true,
+                              "text": "Approve"
+                            ],
+                            "style": "primary",
+                            "action_id": "approve:${env.BUILD_URL}",
+                            "value": "approve:${env.BUILD_URL}",
+                          ],
+                          [
+                            "type": "button",
+                            "text": [
+                              "type": "plain_text",
+                              "emoji": true,
+                              "text": "Abort"
+                            ],
+                            "style": "danger",
+                            "action_id": "reject:${env.BUILD_URL}",
+                            "value": "reject:${env.BUILD_URL}",
+                          ]
+                        ]
+                      ]
                     ]
                     slackSend(channel: "#general", blocks: blocks, failOnError: true)
                 }
-                input message: 'Proceed to Deploy?', ok: 'Deploy'
-                container('kaniko') {
-                    script {
-                        withCredentials([usernamePassword(credentialsId: "github", usernameVariable: 'username', passwordVariable: 'password')]) {
-                            def data = ["auths": ["ghcr.io": ["username": username, "password": password]]]
-                            writeJSON file: "docker-config.json", json: data
-                            sh "cp docker-config.json /kaniko/.docker/config.json"
-                            sh "/kaniko/executor --context . --dockerfile ./build.Dockerfile --destination ghcr.io/mgufrone/symfony-test:${GIT_BRANCH} --destination ghcr.io/mgufrone/symfony-test:${GIT_COMMIT}"
-                        }
+                timeout(time: 5, unit: 'minutes') {
+                    input message: 'Proceed to Deploy?', ok: 'Deploy'
+                }
+            }
+        }
+    }
+
+    node(POD_LABEL) {
+        stages {
+            stage('Deployment') {
+                when {
+                    anyOf {
+                        branch "main"
+                        buildingTag()
                     }
                 }
-                container('helm') {
-                    sh "helm upgrade --install symfony ./charts --set image.tag=${GIT_COMMIT}"
+                steps {
+                    unstash "${BUILD_TAG}"
+                    container('kaniko') {
+                        script {
+                            withCredentials([usernamePassword(credentialsId: "github", usernameVariable: 'username', passwordVariable: 'password')]) {
+                                def data = ["auths": ["ghcr.io": ["username": username, "password": password]]]
+                                writeJSON file: "docker-config.json", json: data
+                                sh "cp docker-config.json /kaniko/.docker/config.json"
+                                sh "/kaniko/executor --context . --dockerfile ./build.Dockerfile --destination ghcr.io/mgufrone/symfony-test:${GIT_BRANCH} --destination ghcr.io/mgufrone/symfony-test:${GIT_COMMIT}"
+                            }
+                        }
+                    }
+                    container('helm') {
+                        sh "helm upgrade --install symfony ./charts --set image.tag=${GIT_COMMIT}"
+                    }
+                    container('kubectl') {
+                        sh "kubectl wait --timeout=60s --for=condition=ready pod -l app=symfony"
+                    }
                 }
             }
         }
