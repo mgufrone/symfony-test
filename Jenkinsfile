@@ -38,7 +38,8 @@ spec:
                         }
                     }
                     success {
-                        stash name: env.BUILD_TAG, includes: "${workspace}/**"
+                      sh 'ls -la'
+                      stash name: env.BUILD_TAG, includes: "${workspace}/**"
                     }
                 }
             }
