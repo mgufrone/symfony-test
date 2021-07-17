@@ -26,7 +26,7 @@ spec:
                     }
                 }
                 steps {
-                  checkout scm
+                  checkout scm, credentialsId: "github"
                   script {
                     env.COMPOSER = GIT_BRANCH=="main" ? "composer.production.json" : "composer.json"
                   }
