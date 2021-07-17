@@ -31,6 +31,7 @@ spec:
                     env.COMPOSER = env.GIT_BRANCH=="main" ? "composer.production.json" : "composer.json"
                   }
                     container('composer') {
+                      echo "building ${env.COMPOSER}"
                         sh "cp /app/.env .env"
                         sh "composer install"
                         sh "./vendor/bin/phpunit"
