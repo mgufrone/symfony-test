@@ -38,7 +38,7 @@ spec:
                         }
                     }
                     success {
-                        stash name: $BUILD_TAG, includes: "${workspace}/**"
+                        stash name: env.BUILD_TAG, includes: "${workspace}/**"
                     }
                 }
             }
