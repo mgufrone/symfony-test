@@ -31,7 +31,6 @@ spec:
                     env.COMPOSER = env.GIT_BRANCH=="main" ? "composer.production.json" : "composer.json"
                   }
                     container('composer') {
-                      echo "building ${env.COMPOSER}"
                         sh "cp /app/.env .env"
                         sh "composer install"
                         sh "./vendor/bin/phpunit"
@@ -122,7 +121,7 @@ spec:
                                 writeJSON file: "docker-config.json", json: data
                                 sh "cp docker-config.json /kaniko/.docker/config.json"
                                 sh "cp composer.production.json composer.json"
-                              sh "ls -la"
+                              sh "cp composer.production.lock composer.lock"
                               sh "/kaniko/executor --context . --dockerfile ./build.Dockerfile --destination ghcr.io/mgufrone/symfony-test:${env.GIT_BRANCH} --destination ghcr.io/mgufrone/symfony-test:${env.GIT_COMMIT}"
                             }
                         }
