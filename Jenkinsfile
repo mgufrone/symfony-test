@@ -3,7 +3,6 @@ pipeline {
     environment {
         SONAR_HOST_URL = credentials('sonar-url')
         SONAR_LOGIN = credentials('sonar-token')
-      COMPOSER = GIT_BRANCH=="main" ? "composer.production.json" : "composer.json"
     }
     stages {
             stage('Build') {
@@ -26,6 +25,9 @@ spec:
                     }
                 }
                 steps {
+                  script {
+                    env.COMPOSER = GIT_BRANCH=="main" ? "composer.production.json" : "composer.json"
+                  }
                     container('composer') {
                         sh "cp /app/.env .env"
                         sh "composer install"
