@@ -3,6 +3,7 @@ pipeline {
     environment {
         SONAR_HOST_URL = credentials('sonar-url')
         SONAR_LOGIN = credentials('sonar-token')
+      COMPOSER = GIT_BRANCH=="main" ? "composer.production.json" : "composer.json"
     }
     stages {
             stage('Build') {

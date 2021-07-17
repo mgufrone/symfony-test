@@ -164,12 +164,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mgufrone/health-test.git",
-                "reference": "0c6f6cf57b080ba0a650a52482965420cdd55074"
+                "reference": "b889c54ba1b9c2ec754fbfd06a8e0f0351881fd7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mgufrone/health-test/zipball/0c6f6cf57b080ba0a650a52482965420cdd55074",
-                "reference": "0c6f6cf57b080ba0a650a52482965420cdd55074",
+                "url": "https://api.github.com/repos/mgufrone/health-test/zipball/b889c54ba1b9c2ec754fbfd06a8e0f0351881fd7",
+                "reference": "b889c54ba1b9c2ec754fbfd06a8e0f0351881fd7",
                 "shasum": ""
             },
             "require": {
@@ -198,7 +198,7 @@
                 "source": "https://github.com/mgufrone/health-test/tree/main",
                 "issues": "https://github.com/mgufrone/health-test/issues"
             },
-            "time": "2021-07-17T14:13:57+00:00"
+            "time": "2021-07-17T14:43:25+00:00"
         },
         {
             "name": "psr/cache",
