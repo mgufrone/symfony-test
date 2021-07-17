@@ -77,7 +77,7 @@ spec:
             exec:
               command:
                 - php-fpm-healthcheck
-                - --accepted-conn=10 # fails after fpm has served more than 5k requests, this will force the pod to reset, use with caution
+                - --accepted-conn=1000 # fails after fpm has served more than 5k requests, this will force the pod to reset, use with caution
             initialDelaySeconds: 10
             failureThreshold: 10
             periodSeconds: 5
