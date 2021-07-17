@@ -26,8 +26,8 @@ spec:
                     }
                 }
                 steps {
-                  checkout scm
                   script {
+                    checkout(scm).each { k,v -> env.setProperty(k, v) }
                     env.COMPOSER = env.GIT_BRANCH=="main" ? "composer.production.json" : "composer.json"
                   }
                     container('composer') {
