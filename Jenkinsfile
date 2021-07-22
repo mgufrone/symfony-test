@@ -44,7 +44,6 @@ spec:
           }
         }
         success {
-          sh 'ls -la'
           stash name: env.BUILD_TAG, includes: "**"
         }
       }
@@ -104,8 +103,8 @@ spec:
     stage('Deployment') {
       when {
         anyOf {
-            branch "main"
-            buildingTag()
+          branch "main"
+          buildingTag()
         }
       }
       agent {
